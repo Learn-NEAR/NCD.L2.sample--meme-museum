@@ -1,49 +1,51 @@
 <template>
-  <Form 
-    @submit="handleSubmit"
-    :validation-schema="schema"
-    class="mt-14 w-full">
+  <div class="col-span-12 md:col-span-3 ">
+              <!-- Add section open -->
 
-                    <div class="flex flex-col lg:flex-row justify-center items-baseline lg:space-x-5">
-                        <div
-                            v-for="field in formFields"
-                            :key="field"
-                            class="mt-4 lg:mt-0"
-                        >
-                            <p :for="field.id" class="text-gray-400 pl-4">{{ field.label }}</p>
-                            <Field  
-                                :v-model="field.id" 
-                                type="text" 
-                                :name="field.id"
-                                :id="field.id"
-                                :placeholder="field.label"
-                                class="w-64 lg:w-44 xl:w-64 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none pl-6"/>
-                            <ErrorMessage :name="field.id" class="w-64 text-red-500" />
-                        </div>
-                        
-                        <div class="mt-4 lg:mt-0">
-                            <p class="text-gray-400 pl-4 lg:pl-0">Category</p>
-                            <Field  
-                                as="select"
-                                v-model="category"
-                                name="category"
-                                id="category"
-                                class="w-16 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none px-3"
+                    <!-- Add meme section -->
+                    <div class="mt-6 px-6 py-4 w-full rounded-md bg-indigo-200">
+                        <h3 class="text-lg font-medium text-gray-900">Add meme</h3>
+                        <p class="text-gray-500">Share your favorite MEME</p>
+                        <Form
+                            @submit="handleSubmit"
+                            :validation-schema="schema"
+                            class="mt-4">
+
+                            <div 
+                                v-for="field  in  formFields"
+                                :key="field.id">
+                                <div>
+                                    <p :for="field.id" class="text-gray-800 font-semibold">{{ field.label }}</p>
+
+                                    <Field
+                                        :v-model="field.id"
+                                        type="text"
+                                        :name="field.id"
+                                        :id="field.id"
+                                        :placeholder="field.label"
+                                        class="w-full mt-2 py-2 pl-6 text-gray-900 font-semibold bg-indigo-100 rounded-md outline-none border-2 focus:border-indigo-500"/>
+                                </div>
+                                <ErrorMessage :name="field.id" class="w-64 text-red-500" />
+                            </div>
+
+                            <Field 
+                            as="select"
+                            v-model="category"
+                            name="category"
+                            id="category"
+                            class="w-full mt-6 py-2 pl-6 rounded-md bg-indigo-100 text-gray-900 font-medium outline-none border-2 focus:border-indigo-500"
                             >
-                                <option value="0">0</option>
-                                <option value=1>1</option>
-                                <option value=2>2</option>
-                                <option value=3>3</option>
-                                <option value=4>4</option>
+                                <option>0</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
                             </Field>
-                        </div>
-                        <div class="mt-4 lg:mt-0">
-                            <p class="hidden lg:block text-transparent">buttons</p>
-                            <button class="inline-block mt-2 w-64 lg:w-44 xl:w-64 py-3 bg-gradient-to-r from-blue-500 hover:from-white active:from-gray-200 to-blue-600 hover:to-white active:to-gray-200 text-white hover:text-blue-600 text-center font-semibold rounded-md">Send</button>
-                        </div>
-                    </div>
 
-                </Form>
+                            <button class="w-full block mt-6 py-2 rounded-md bg-indigo-500 hover:bg-indigo-600 text-white text-center font-medium outline-none">Add</button>
+
+                        </Form>
+                    </div>
+                  </div>
 </template>
 
 <script>
@@ -53,12 +55,12 @@ import { useForm, useField, Form, Field, ErrorMessage } from "vee-validate";
 export default {
     props: {
         addMeme: {
-            type: Function,
-            required: true
+            type:Function,
+            required:true,
         },
         memes: {
-            type: Array,
-            required: true
+            type:Array,
+            required:true,
         }
     },
     components: {
@@ -67,75 +69,72 @@ export default {
         ErrorMessage
     },
     setup(props) {
-        const memeIds = ref()
+        const memesIds = ref();
         watchEffect(() => {
-            memeIds.value = props.memes.map((meme) => {
-                return meme.id;
-            })
-        })
+            memesIds.value = props.memes.map((meme) => {
+                return meme.id
+            });
+        });
 
-        //set of rules which is used during validation process
         const schema = {
             meme(value) {
-                if(!value) {
-                    return "Name is required"
+                if (!value) {
+                    return "This  field is required";
                 }
                 if (value.length < 2) {
-                    return "Must be at least 2 characters"
+                    return "minimum length is 2";
+                } 
+                if (value === memesIds.value.find((id) => id === value)) {
+                    return "This meme is already taken, please choose another one";
                 }
-                if (value === memeIds.value.find((id) => id === value)) {
-                    return "This id is already in use"
-                }
-                //check if id is correct, according to the near naming system
                 if (
                     // eslint-disable-next-line
                     !/^(([a-z\d]+[\-_])*[a-z\d]+\.)*([a-z\d]+[\-_])*[a-z\d]+$/.test(value)
                 ) {
-                    return "This Id is not correct, according to the NEAR Protocol account names system.";
+                    return "This memeId doesn't follow  the NEAR Protocol account naming system";
                 }
-                return true
+                return  true;
             },
             title(value) {
-                if(!value) {
-                    return "title is required"
+                if (!value) {
+                    return "This  field is required";
                 }
-                if(value.length < 2) {
-                     return "Must be at least 2 characters"
-                }
-                return true
+                if (value.length < 2) {
+                    return "minimum length is 2";
+                } 
+                return  true;
             },
             data(value) {
-                if(
-                    // Checks if this is a correct  format link
+                if (
                     // eslint-disable-next-line
                     !/(https:|http:)+(\/\/)+(9gag\.com\/gag\/)+\S/.test(value)
                 ) {
-                    return "This should be a 9gag link"
+                    return "This should be a 9gag link";
                 }
-                return true
+                return true;
             },
         };
 
         useForm({
             validationSchema: schema
-        })
+        });
 
-        /* eslint-disable no-unused-vars */
+        // eslint-disable-next-line no-unused-vars
         const { value: meme, errorMessage: memeError } = useField("meme");
+        // eslint-disable-next-line no-unused-vars
         const { value: title, errorMessage: titleError } = useField("title");
+        // eslint-disable-next-line no-unused-vars
         const { value: data, errorMessage: dataError } = useField("data");
-        /* eslint-enable no-unused-vars */
 
-        const category = ref(0);
+        const category =  ref(0);
 
+        const  handleSubmit = (values) => {
+            props.addMeme(values)
+        }
 
-        const handleSubmit = (values) => {
-            props.addMeme(values);
-        };
-
-        const formFields = [
+        const  formFields = [
             {
-                label: "Meme Name",
+                label: "Meme  name",
                 id: "meme",
             },
             {
@@ -143,7 +142,7 @@ export default {
                 id: "title",
             },
             {
-                label: "9gag Link",
+                label:"9gag Link",
                 id: "data",
             },
         ];
@@ -152,8 +151,9 @@ export default {
             schema,
             category,
             handleSubmit,
-            formFields,
-        };
+            formFields
+        }
     }
+
 }
 </script>
