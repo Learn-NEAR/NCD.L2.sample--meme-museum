@@ -1,5 +1,7 @@
 import { ref, onMounted } from "vue";
 import {
+  wallet, 
+  CONTRACT_ID,
   getMemes,
   addMeme,
   getMeme,
@@ -9,10 +11,13 @@ import {
   vote,
 } from "../services/near";
 
+
+
 export const useMemes = () => {
   const memes = ref([]);
   const err = ref(null);
 
+  //initialize memes  list
   onMounted(async () => {
     try {
       const memeIds = await getMemes();
@@ -40,27 +45,45 @@ export const useMemes = () => {
     }
   });
 
-  const handleAddMeme = async ({ meme, title, data, category }) => {
-    addMeme({ meme, title, data, category });
+  return {
+    memes,
+    addMeme,
+    addComment,
+    donate,
+    vote,
+    CONTRACT_ID
+  };
+};
+
+
+export const useWallet = () => {
+  const accountId = ref('')
+  const err = ref(null)
+
+  onMounted(async () => {
+    try {
+      accountId.value = wallet.getAccountId()
+    } catch (e) {
+      err.value = e;
+      console.error(err.value);
+    }
+  });
+
+  const handleSignIn = () => {
+    wallet.requestSignIn({
+      contractId: CONTRACT_ID,
+      methodNames: [] // add methods names to restrict access
+    })
   };
 
-  const handleAddComment = async ({ memeId, text }) => {
-    await addComment({ memeId, text });
-  };
-
-  const handleDonate = async ({ memeId, amount }) => {
-    await donate({ memeId, amount });
-  };
-
-  const handleVote = async ({ memeId, value }) => {
-    await vote({ memeId, value });
+  const handleSignOut = () => {
+    wallet.signOut()
+    accountId.value = ''
   };
 
   return {
-    memes,
-    addMeme: handleAddMeme,
-    addComment: handleAddComment,
-    donate: handleDonate,
-    vote: handleVote,
-  };
-};
+    accountId,
+    signIn: handleSignIn,
+    signOut: handleSignOut
+  }
+}
