@@ -15,7 +15,7 @@ Any content produced by NEAR, or developer resources that NEAR provides, are for
 
 <a href="https://github.com/NazarH2ONyzhnyk/meme-museum-new"  target="_blank">Raw html + TailwindCss</a>
 
-
+My DISCORD id is alxndr.sai#4086 - in case of any questions
 ## Project setup
 ```
 npm install
