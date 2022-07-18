@@ -1,30 +1,36 @@
-import { keyStores, Near, WalletConnection, Contract, utils } from "near-api-js";
-import BN from "bn.js";
+import BN from 'bn.js';
+import { keyStores, Near, WalletConnection, utils } from 'near-api-js';
 
-export const CONTRACT_ID = process.env.VUE_APP_CONTRACT_ID;
-const gas = new BN(process.env.VUE_APP_gas);
+const gas = new BN(process.env.REACT_APP_GAS);
 
 export const near = new Near({
-  networkId: process.env.VUE_APP_networkId,
+  networkId: process.env.REACT_APP_NETWORK_ID,
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-  nodeUrl: process.env.VUE_APP_nodeUrl,
-  walletUrl: process.env.VUE_APP_walletUrl,
+  nodeUrl: process.env.REACT_APP_NODE_URL,
+  walletUrl: process.env.REACT_APP_WALLET_URL,
 });
 
-export const wallet = new WalletConnection(near, "NCD.L2.sample--meme-museum");
+export const wallet = new WalletConnection(near, 'meme-museum');
 
-function getMemeMuseumContract() {
-  return new Contract(
-    wallet.account(), // the account object that is connecting
-    CONTRACT_ID, // name of contract you're connecting to
-    {
-      viewMethods: ['get_meme_list', 'get_meme', 'get_recent_comments'], // view methods do not change state but usually return a value
-      changeMethods: ['add_meme', 'add_comment', 'donate', 'vote'] // change methods modify state
-    }
-  )
-}
+// --------------------------------------------------------------------------
+// functions to sign
+// --------------------------------------------------------------------------
 
-const memeMuseumContract = getMemeMuseumContract()
+export const signIn = () => {
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
+  wallet.requestSignIn({
+    contractId: CONTRACT_ID,
+    methodNames: [], // add methods names to restrict access
+  });
+};
+
+export const signOut = () => {
+  wallet.signOut();
+};
+
+export const getAccountId = () => {
+  return wallet.getAccountId();
+};
 
 // --------------------------------------------------------------------------
 // functions to call contract Public VIEW methods
@@ -32,21 +38,22 @@ const memeMuseumContract = getMemeMuseumContract()
 
 // function  to get memes
 export const getMemes = () => {
-  return memeMuseumContract.get_meme_list();
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
+  return wallet.account().viewFunction(CONTRACT_ID, 'get_meme_list', {});
 };
 
 // function  to get  info about meme
-// Contract class is not used because for each mem it will be needed to create new Contract instance for each function call
 export const getMeme = (meme) => {
-  const memeContractId = meme + "." + CONTRACT_ID;
-  return wallet.account().viewFunction(memeContractId, "get_meme", {});
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
+  const memeContractId = meme + '.' + CONTRACT_ID;
+  return wallet.account().viewFunction(memeContractId, 'get_meme', {});
 };
 
-// function to get  meme's  comment
-// Contract class is not used because for each mem it will be needed to create new Contract instance for each function call
+// function to get  meme`s  comment
 export const getMemeComments = (meme) => {
-  const memeContractId = meme + "." + CONTRACT_ID;
-  return wallet.account().viewFunction(memeContractId, "get_recent_comments", {});
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
+  const memeContractId = meme + '.' + CONTRACT_ID;
+  return wallet.account().viewFunction(memeContractId, 'get_recent_comments', {});
 };
 
 // --------------------------------------------------------------------------
@@ -55,45 +62,47 @@ export const getMemeComments = (meme) => {
 
 // function  to add  meme
 export const addMeme = ({ meme, title, data, category }) => {
-  category = parseInt(category)
-  return memeMuseumContract.add_meme(
-    { meme, title, data, category },
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
+  category = parseInt(category);
+  return wallet.account().functionCall({
+    contractId: CONTRACT_ID,
+    methodName: 'add_meme',
     gas,
-    utils.format.parseNearAmount("3")
-  );
+    args: { meme, title, data, category },
+    attachedDeposit: utils.format.parseNearAmount('3'),
+  });
 };
 
 // function  to  add comment
-// Contract class is not used because for each mem it will be needed to create new Contract instance for each function call
 export const addComment = ({ memeId, text }) => {
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
   const memeContractId = `${memeId}.${CONTRACT_ID}`;
   return wallet.account().functionCall({
     contractId: memeContractId,
-    methodName: "add_comment",
+    methodName: 'add_comment',
     args: { text },
   });
 };
 
 //function to donate
-// Contract class is not used because for each mem it will be needed to create new Contract instance for each function call
 export const donate = ({ memeId, amount }) => {
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
   const memeContractId = `${memeId}.${CONTRACT_ID}`;
   return wallet.account().functionCall({
     contractId: memeContractId,
-    methodName: "donate",
+    methodName: 'donate',
     attachedDeposit: utils.format.parseNearAmount(amount),
   });
 };
 
 //function to vote for the meme
-// Contract class is not used because for each mem it will be needed to create new Contract instance for each function call
 export const vote = ({ memeId, value }) => {
-  console.log(memeId)
-  console.log(value)
+  const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
   const memeContractId = `${memeId}.${CONTRACT_ID}`;
+
   return wallet.account().functionCall({
     contractId: memeContractId,
-    methodName: "vote",
+    methodName: 'vote',
     args: { value },
   });
 };
