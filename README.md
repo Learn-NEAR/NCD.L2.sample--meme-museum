@@ -17,7 +17,7 @@ Any content produced by NEAR, or developer resources that NEAR provides, are for
 ![image](https://user-images.githubusercontent.com/38455192/139825787-9089159c-086e-4f28-b3be-cbf95cc8fa84.png)
 
 UI walkthrough
-<a href="https://www.loom.com/share/3b558ef14d4945338d4220964f075220" target="_blank">![image](https://user-images.githubusercontent.com/38455192/179209812-21dda94f-504f-4f87-bf7b-371cb9f1140b.png)</a>
+<a href="https://www.loom.com/share/3b558ef14d4945338d4220964f075220" target="_blank">UI walkthrough</a>
 
 You can use this app with contract id which was deployed by the creators of this repo or you can use it with your own deployed contract id.
 
@@ -26,8 +26,7 @@ To deploy sample--meme-museum to your account visit <a href="https://github.com/
 After you successfully deployed meme-museum and you have contract id, you can clone the repo and put contract ids inside .env file :
 
 ```
-VUE_APP_THANKS_CONTRACT_ID = "put your thanks contract id here"
-VUE_APP_REGISTRY_CONTRACT_ID="put your registry contract id here"
+VUE_APP_CONTRACT_ID = "put your contract id here"
 ...
 ```
 
