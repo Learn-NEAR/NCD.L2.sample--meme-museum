@@ -1,49 +1,33 @@
 <template>
-  <Form 
-    @submit="handleSubmit"
-    :validation-schema="schema"
-    class="mt-14 w-full">
+    <Form @submit="handleSubmit" :validation-schema="schema" class="mt-14 w-full">
 
-                    <div class="flex flex-col lg:flex-row justify-center items-baseline lg:space-x-5">
-                        <div
-                            v-for="field in formFields"
-                            :key="field"
-                            class="mt-4 lg:mt-0"
-                        >
-                            <p :for="field.id" class="text-gray-400 pl-4">{{ field.label }}</p>
-                            <Field  
-                                :v-model="field.id" 
-                                type="text" 
-                                :name="field.id"
-                                :id="field.id"
-                                :placeholder="field.label"
-                                class="w-64 lg:w-44 xl:w-64 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none pl-6"/>
-                            <ErrorMessage :name="field.id" class="w-64 text-red-500" />
-                        </div>
-                        
-                        <div class="mt-4 lg:mt-0">
-                            <p class="text-gray-400 pl-4 lg:pl-0">Category</p>
-                            <Field  
-                                as="select"
-                                v-model="category"
-                                name="category"
-                                id="category"
-                                class="w-16 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none px-3"
-                            >
-                                <option value="0">0</option>
-                                <option value=1>1</option>
-                                <option value=2>2</option>
-                                <option value=3>3</option>
-                                <option value=4>4</option>
-                            </Field>
-                        </div>
-                        <div class="mt-4 lg:mt-0">
-                            <p class="hidden lg:block text-transparent">buttons</p>
-                            <button class="inline-block mt-2 w-64 lg:w-44 xl:w-64 py-3 bg-gradient-to-r from-blue-500 hover:from-white active:from-gray-200 to-blue-600 hover:to-white active:to-gray-200 text-white hover:text-blue-600 text-center font-semibold rounded-md">Send</button>
-                        </div>
-                    </div>
+        <div class="flex flex-col lg:flex-row justify-center items-baseline lg:space-x-5">
+            <div v-for="field in formFields" :key="field" class="mt-4 lg:mt-0">
+                <p :for="field.id" class="text-gray-400 pl-4">{{ field.label }}</p>
+                <Field :v-model="field.id" type="text" :name="field.id" :id="field.id" :placeholder="field.label"
+                    class="w-64 lg:w-44 xl:w-64 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none pl-6" />
+                <ErrorMessage :name="field.id" class="w-64 text-red-500" />
+            </div>
 
-                </Form>
+            <div class="mt-4 lg:mt-0">
+                <p class="text-gray-400 pl-4 lg:pl-0">Category</p>
+                <Field as="select" v-model="category" name="category" id="category"
+                    class="w-16 mt-2 py-3 rounded-md border-2 border-gray-900 focus:border-blue-600 outline-none px-3">
+                    <option value="0">0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                </Field>
+            </div>
+            <div class="mt-4 lg:mt-0">
+                <p class="hidden lg:block text-transparent">buttons</p>
+                <button
+                    class="inline-block mt-2 w-64 lg:w-44 xl:w-64 py-3 bg-gradient-to-r from-blue-500 hover:from-white active:from-gray-200 to-blue-600 hover:to-white active:to-gray-200 text-white hover:text-blue-600 text-center font-semibold rounded-md">Send</button>
+            </div>
+        </div>
+
+    </Form>
 </template>
 
 <script>
@@ -77,7 +61,7 @@ export default {
         //set of rules which is used during validation process
         const schema = {
             meme(value) {
-                if(!value) {
+                if (!value) {
                     return "Name is required"
                 }
                 if (value.length < 2) {
@@ -96,16 +80,16 @@ export default {
                 return true
             },
             title(value) {
-                if(!value) {
+                if (!value) {
                     return "title is required"
                 }
-                if(value.length < 2) {
-                     return "Must be at least 2 characters"
+                if (value.length < 2) {
+                    return "Must be at least 2 characters"
                 }
                 return true
             },
             data(value) {
-                if(
+                if (
                     // Checks if this is a correct  format link
                     // eslint-disable-next-line
                     !/(https:|http:)+(\/\/)+(9gag\.com\/gag\/)+\S/.test(value)
